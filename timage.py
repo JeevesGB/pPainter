@@ -1,3 +1,5 @@
+import os 
+os.environ["QT_QPA_PLATFORM"] = "xcb"
 import sys
 import struct
 from PyQt6.QtWidgets import (
@@ -457,6 +459,24 @@ class MainWindow(QMainWindow):
                 visited.add((px,py))
                 stack.extend([(px+1,py),(px-1,py),(px,py+1),(px,py-1)])
 
+    def _get_rgb_from_pixel(self, pix):
+        """Helper method to extract RGB values from pixel data"""
+        if self.palette_mode and self.image_info.get('clut'):
+            # For palette mode, pix is an index
+            if isinstance(pix, int) and 0 <= pix < len(self.image_info['clut']):
+                return self.image_info['clut'][pix]
+            else:
+                return (0, 0, 0)  # Default color for invalid index
+        elif isinstance(pix, tuple):
+            # Direct RGB tuple
+            return pix
+        elif hasattr(pix, 'red'):
+            # QColor object
+            return (pix.red(), pix.green(), pix.blue())
+        else:
+            # Fallback
+            return (0, 0, 0)
+
     def save_file(self):
         if not self.current_file:
             self.save_file_as()
@@ -468,10 +488,7 @@ class MainWindow(QMainWindow):
             img = QImage(self.image_info['width'], self.image_info['height'], QImage.Format.Format_ARGB32)
             for y,row in enumerate(self.image_info['data']):
                 for x,pix in enumerate(row):
-                    if isinstance(pix, tuple):
-                        r,g,b = pix
-                    else:
-                        r,g,b = pix.red(), pix.green(), pix.blue()
+                    r, g, b = self._get_rgb_from_pixel(pix)
                     img.setPixelColor(x,y, QColor(r,g,b))
             img.save(self.current_file, fmt)
 
@@ -486,12 +503,10 @@ class MainWindow(QMainWindow):
             img = QImage(self.image_info['width'], self.image_info['height'], QImage.Format.Format_ARGB32)
             for y,row in enumerate(self.image_info['data']):
                 for x,pix in enumerate(row):
-                    if isinstance(pix, tuple):
-                        r,g,b = pix
-                    else:
-                        r,g,b = pix.red(), pix.green(), pix.blue()
+                    r, g, b = self._get_rgb_from_pixel(pix)
                     img.setPixelColor(x,y, QColor(r,g,b))
             img.save(path, fmt)
+        self.current_file = path
 
     def export_png(self):
         path, _ = QFileDialog.getSaveFileName(self, "Export to PNG", "", "PNG (*.png)")
@@ -499,10 +514,7 @@ class MainWindow(QMainWindow):
         img = QImage(self.image_info['width'], self.image_info['height'], QImage.Format.Format_ARGB32)
         for y,row in enumerate(self.image_info['data']):
             for x,pix in enumerate(row):
-                if isinstance(pix, tuple):
-                    r,g,b = pix
-                else:
-                    r,g,b = pix.red(), pix.green(), pix.blue()
+                r, g, b = self._get_rgb_from_pixel(pix)
                 img.setPixelColor(x,y, QColor(r,g,b))
         img.save(path, "PNG")
 
