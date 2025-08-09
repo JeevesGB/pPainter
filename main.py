@@ -196,7 +196,7 @@ class Canvas(QLabel):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("TIM Image Editor")
+        self.setWindowTitle("TIMage")
         self.image_info = None
         self.current_file = None
         self.palette_mode = False
