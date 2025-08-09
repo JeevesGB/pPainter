@@ -1,4 +1,3 @@
-
 # pPainter
 
 pPainter is a lightweight painting/drawing application built with Python and PyQt6.  
@@ -69,7 +68,61 @@ python main.py
 
 ---
 
-### Cross-compiling Windows `.exe` on Linux (Using Wine)
+## Building Windows EXE
+
+### Method 1: On Windows (Recommended)
+
+1. Install Python and dependencies:
+```cmd
+pip install pyqt6 pillow pyinstaller
+```
+
+2. Build the executable:
+```cmd
+pyinstaller --onefile --windowed --name pPainter main.py
+```
+
+3. Your `.exe` will be in the `dist/` folder
+
+### Method 2: On Linux with Virtual Environment
+
+If you get an "externally-managed-environment" error on Linux:
+
+```bash
+# Install system dependencies (if needed)
+sudo apt install python3-full python3-venv
+
+# Create virtual environment
+python3 -m venv painter_builder
+
+# Activate it
+source painter_builder/bin/activate
+
+# Install dependencies
+pip install pyinstaller pyqt6 pillow
+
+# Build executable
+pyinstaller --onefile --windowed --name pPainter main.py
+
+# Deactivate when done
+deactivate
+```
+
+### Method 3: Using pipx (Alternative for Linux)
+
+```bash
+# Install pipx
+sudo apt install pipx
+
+# Create temporary environment and build
+python3 -m venv temp_build
+source temp_build/bin/activate
+pip install pyinstaller pyqt6 pillow
+pyinstaller --onefile --windowed --name pPainter main.py
+deactivate
+```
+
+### Method 4: Cross-compiling Windows `.exe` on Linux (Using Wine)
 
 If you want to build a Windows executable (`.exe`) from your Linux machine, follow these steps:
 
@@ -89,7 +142,7 @@ wine python-3.x.x.exe
 3. Install PyInstaller and PyQt6 in Wine Python:
 
 ```bash
-wine "C:\\path\\to\\python.exe" -m pip install pyinstaller pyqt6
+wine "C:\\path\\to\\python.exe" -m pip install pyinstaller pyqt6 pillow
 ```
 
 4. Run PyInstaller inside Wine to build your `.exe`:
@@ -102,13 +155,25 @@ wine "C:\\path\\to\\python.exe" -m PyInstaller --onefile --windowed main.py
 
 ---
 
+## PyInstaller Options Explained
+
+- `--onefile`: Creates a single executable file instead of a folder with dependencies
+- `--windowed`: Prevents console window from appearing (GUI apps only)
+- `--name pPainter`: Sets the executable name to "pPainter.exe"
+
+---
+
 ## Troubleshooting
+
+- **"externally-managed-environment" error**: Use a virtual environment (Method 2 above)
 
 - **Wayland errors on Linux**: Qt apps sometimes have issues with Wayland compositors. Use the `QT_QPA_PLATFORM=xcb` environment variable to force X11 backend.
 
 - **Missing Qt plugins (xcb)**: Install system packages like `libxcb-xinerama0` and `libxcb-cursor0` to resolve Qt plugin loading errors.
 
 - **Wine PyInstaller build fails**: Make sure Wine is fully installed and that you installed Windows Python and PyInstaller inside the Wine prefix correctly.
+
+- **EXE is too large**: PyInstaller includes the entire Python runtime. This is normal - expect 50-100MB+ file sizes.
 
 ---
 
@@ -120,4 +185,4 @@ MIT License
 
 ## Author
 
-_jej_ 
+_jej_
