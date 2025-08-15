@@ -1,7 +1,6 @@
 # pPainter
 
-pPainter is a lightweight painting/drawing application built with Python and PyQt6.  
-It allows users to create and edit images with a simple and intuitive interface supporting basic brush tools, layers, color selection, and file export.
+pPainter is a lightweight .TIM pallette editing application built with Python and PyQt6.
 
 ---
 
